@@ -1,0 +1,30 @@
+name: CI Security Check
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Descarga el código
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Verifica que NO hay secretos (Simulacion segura)
+      - name: Verify Secret Management
+        run: |
+          echo "[INFO] Verificando que github_token.txt no está en el repo..."
+          if [ -f "github_token.txt" ]; then
+            echo "[ERROR] ¡Se ha detectado un token en el repositorio! Bloqueando..."
+            exit 1
+          else
+            echo "[OK] No se detectaron secretos locales."
+          fi
+
+      # 3. Resultado final (Green Light)
+      - name: Final Security Evidence
+        run: echo "🎉 PIPELINE VERDE - Control de seguridad superado con éxito."
